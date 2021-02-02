@@ -3,44 +3,47 @@ require 'yaml'
 require 'pry'
 
 def load_library (file_path)
-  file = YAML.load_file(file_path)
   dictionary = {}
-
-  file.each do |name, emoji_array|
-    dictionary[name] = {:english => {}, :japanese => {}}
-    emoji_array.each_with_index do |emoji, index|
-      if index == 0
-        dictionary[name][:english] = emoji
-      elsif index == 1
-        dictionary[name][:japanese] = emoji
-      end
+  
+  YAML.load_file("./lib/emoticons.yml").each do |key, value|
+    dictionary[key] = {}
+    
+    value.each_with_index do |element, index|
+      dictionary[key] = {:english => value[0], :japanese => value[1]}
     end
   end
-  dictionary
+ return dictionary
 end
 
 def get_japanese_emoticon(file_path, emoji)
   dictionary = load_library(file_path)
-  japanese_emoji = ""
-  dictionary.each do |name, value|
+  return_message = ""
+  dictionary.each do |key, value|
     if emoji == value[:english]
-      return japanese_emoji = value[:japanese]
+      return value[:japanese]
     else
-      japanese_emoji = "Sorry, that emoticon was not found"
+      return_message = "Sorry, that emoticon was not found"
     end
   end
-  return japanese_emoji
+  return_message
 end
 
 def get_english_meaning(file_path, emoji)
-  dictionary = load_library(file_path)
-  eng_name = ""
-  dictionary.each do |name, value|
-    if emoji == value[:japanese]
-     return eng_name = name
-    else
-      eng_name = "Sorry, that emoticon was not found"
+   dictionary = load_library(file_path)
+   failure_notice = ""
+   dictionary.each do |key, value|
+     value.each do |inner_key, inner_value|
+      if emoji == inner_value
+        return key
+      else
+        failure_notice = "Sorry, that emoticon was not found"
+      end
     end
-  end
-  return eng_name
-end
+   end
+   return failure_notice
+ end
+
+
+
+
+
